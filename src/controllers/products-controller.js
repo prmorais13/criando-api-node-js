@@ -2,104 +2,93 @@
 
 const mongoose = require('mongoose');
 const Product = mongoose.model('Product');
+const repository = require('../repositories/product-repository');
 
-exports.get = (req, res, next) => {
-  Product
-    .find({ active: true }, 'title price slug')
-    .then(data => {
-      res.status(200).send(data);
-    })
-    .catch(e => {
-      res.status(400).send(e);
+exports.get = async(req, res, next) => {
+  try {
+    let data = await repository.get();
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).send({
+      //messagem: 'Falha ao processar requesição!',
+      erro: error.message
     });
-}
-
-exports.getBySlug = (req, res, next) => {
-  Product
-    .findOne({
-      slug: req.params.slug,
-      active: true 
-    }, 'title description price slug tags')
-    .then(data => {
-      res.status(200).send(data);
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
-}
-
-exports.getById = (req, res, next) => {
-  Product
-    .findById(req.params.id, 'title description price slug tags')
-    .then(data => {
-      res.status(200).send(data);
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
-}
-
-exports.getByTag = (req, res, next) => {
-  Product
-    .find({
-      tags: req.params.tag,
-      active: true
-    }, 'title description price slug tags')
-    .then(data => {
-      res.status(200).send(data);
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
-}
-
-exports.post = (req, res, next) => {
-  let product = new Product(req.body);
-  product
-    .save()
-    .then(x => {
-      res.status(201).send({ message: 'Produto cadastrado com sucesso'});
-    })
-    .catch(e => {
-      res.status(400).send({ message: 'Falha ao cadastrar produto', data: e});
-    });
+  };
 };
 
-exports.put = (req, res, next) => {
-  Product
-    .findByIdAndUpdate(req.params.id, {
-      $set: {
-        title: req.body.title,
-        slug: req.body.slug,
-        description: req.body.description,
-        price: req.body.price
-      }
-    })
-    .then(x => {
-      res.status(200).send({
-        message: 'Produto atualizado com sucesso.',
-        dados: req.body });
-    })
-    .catch(e => {
-      res.status(400).send({
-        message: 'Erro ao atualizar produto',
-        error: e
-      });
+exports.getBySlug = async(req, res, next) => {
+  try {
+    let data = await repository.getBySlug(req.params.slug);
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).send({
+      erro: error.message
     });
+  };
 };
 
-exports.delete = (req, res, next) => {
-  Product
-    .findByIdAndRemove(req.params.id)
-    .then(x => {
-      res.status(200).send({
-        message: 'Produto excluido com sucesso.'
-      });
-    })
-    .catch(e => {
-      res.status(400).send({
-        message: 'Erro ao excluir produto',
-        error: e
-      });
+exports.getById = async(req, res, next) => {
+  try {
+    let data = await repository.getById(req.params.id);
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).send({
+      erro: error.message
     });
+  };
+};
+
+exports.getByTag = async(req, res, next) => {
+  try {
+    let data = await repository.getByTag(req.params.tags);
+    res.status(200).send(data);
+  } catch (error) {
+    res.status(500).send({
+      erro: error.message
+    });
+  }
+};
+
+exports.post = async(req, res, next) => {
+  try {
+    let data = await repository.create(req.body)
+    res.status(201).send({
+      msg: 'Produto cadastrado com sucesso',
+      dados: data
+    });
+  } catch (error) {
+    res.status(500).send({
+      msg: 'Falha ao cadastrar produto',
+      erro: error.message
+    });
+  };
+};
+
+exports.put = async(req, res, next) => {
+  try {
+    let data = await repository.update(req.params.id, req.body);
+    res.status(200).send({
+      msg: 'Produto atualizado com sucesso.',
+      dados: data
+    });
+  } catch (error) {
+    res.status(500).send({
+      msg: 'Erro ao atualizar produto',
+      erro: error.message
+    });
+  };
+};
+
+exports.delete = async(req, res, next) => {
+  try {
+    await repository.del(req.params.id);
+    res.status(200).send({
+      message: 'Produto excluido com sucesso.'
+    });
+  } catch (error) {
+    res.status(400).send({
+      mesg: 'Erro ao excluir produto',
+      erro: error.message
+    });
+  };
 };

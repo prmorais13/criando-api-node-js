@@ -13,6 +13,8 @@ mongoose.connect('mongodb://localhost:27017/nostore', { useNewUrlParser: true })
 
 //Carrega os Models
 const Product = require('./models/product');
+const Costumer = require('./models/customer');
+const Order = require('./models/order');
 
 //Carrega as rotas
 const indexRoute = require('./routes/index-route');

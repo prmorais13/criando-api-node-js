@@ -3,13 +3,15 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const config = require('./config');
 
 const app = express();
 const router = express.Router();
 
 //Conecta ao banco de dados
 //mongoose.connect('mongodb://prmorais:Paulo13@ds018308.mlab.com:18308/nostore', { useNewUrlParser: true });
-mongoose.connect('mongodb://localhost:27017/nostore', { useNewUrlParser: true });
+//mongoose.connect('mongodb://localhost:27017/nostore', { useNewUrlParser: true });
+mongoose.connect(config.connectionString, { useNewUrlParser: true });
 
 //Carrega os Models
 const Product = require('./models/product');
@@ -27,7 +29,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use('/', indexRoute);
 app.use('/products', productRoute);
-app.use('/costumers', costumertRoute);
+app.use('/customers', costumertRoute);
 app.use('/orders', orderRoute);
 
 module.exports = app;

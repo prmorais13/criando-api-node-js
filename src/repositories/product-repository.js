@@ -36,9 +36,8 @@ exports.getByTag = async(tagParam) => {
 }
 
 exports.create = async(data) => {
-  let product = new Product(data);
-  await product.save();
-  return data;
+  let product = new Product(data);  
+  return await product.save();;
 }
 
 exports.update = async(idParam, data) => {
